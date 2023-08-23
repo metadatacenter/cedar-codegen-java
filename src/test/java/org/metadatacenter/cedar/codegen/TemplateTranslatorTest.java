@@ -29,7 +29,7 @@ public class TemplateTranslatorTest {
     @Before
     public void setUp() throws Exception {
         translator = new TemplateTranslator(SPECIFIED_TEMPLATE_CLASS_NAME);
-        when(field.getName()).thenReturn(THE_FIELD_NAME);
+        when(field.name()).thenReturn(THE_FIELD_NAME);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class TemplateTranslatorTest {
     @Test
     public void shouldGenerateNodeWithNonNullId() {
         final var expectedUri = "https://example.org";
-        when(field.getIdentifier()).thenReturn(Optional.of(expectedUri));
+        when(field.identifier()).thenReturn(Optional.of(expectedUri));
         var node = translator.toCodeGenerationNode(field);
         assertThat(node.id()).isEqualTo(expectedUri);
     }
@@ -69,8 +69,8 @@ public class TemplateTranslatorTest {
     @Test
     public void shouldGenerateNodeWithArtifactTypeIriField() {
         var vc = mock(ValueConstraints.class);
-        when(vc.getClasses()).thenReturn(List.of(mock(ClassValueConstraint.class)));
-        when(field.getValueConstraints()).thenReturn(Optional.of(vc));
+        when(vc.classes()).thenReturn(List.of(mock(ClassValueConstraint.class)));
+        when(field.valueConstraints()).thenReturn(Optional.of(vc));
         var node = translator.toCodeGenerationNode(field);
         assertThat(node.artifactType()).isEqualTo(CodeGenerationNodeRecord.ArtifactType.LITERAL_FIELD);
         assertThat(node.artifactType()).isEqualTo(CodeGenerationNodeRecord.ArtifactType.IRI_FIELD);

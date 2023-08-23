@@ -46,21 +46,21 @@ public class TemplateTranslator {
 
     @Nonnull
     private CodeGenerationNode toFieldNode(FieldSchemaArtifact field) {
-        return CodeGenerationNode.get(field.getJsonLdId().map(URI::toString).orElse(""),
+        return CodeGenerationNode.get(field.jsonLdId().map(URI::toString).orElse(""),
                                       false,
-                                      field.getName(),
+                                      field.name(),
                                       List.of(),
                                       field.hasIRIValue() ? ArtifactType.IRI_FIELD : ArtifactType.LITERAL_FIELD,
-                                      field.getDescription(),
+                                      field.description(),
                                       getXsdDatatype(field),
-                                      field.getValueConstraints()
-                                           .map(ValueConstraints::isRequiredValue)
+                                      field.valueConstraints()
+                                           .map(ValueConstraints::requiredValue)
                                            .filter(required -> required)
                                            .map(required -> Required.REQUIRED)
                                            .orElse(Required.OPTIONAL),
                                       toCardinality(field),
                                       getPropertyIri(field).orElse(null),
-                                      field.getFieldUI().getInputType());
+                                      field.fieldUi().inputType());
     }
 
     @Nonnull
@@ -69,12 +69,12 @@ public class TemplateTranslator {
                                 .stream()
                                 .map(childSchemaArtifact -> toCodeGenerationNode((SchemaArtifact) childSchemaArtifact))
                                 .toList();
-        return CodeGenerationNode.get(element.getJsonLdId().map(URI::toString).orElse(""),
+        return CodeGenerationNode.get(element.jsonLdId().map(URI::toString).orElse(""),
                                       false,
-                                      element.getName(),
+                                      element.name(),
                                       childNodes,
                                       ArtifactType.ELEMENT,
-                                      element.getDescription(),
+                                      element.description(),
                                       null,
                                       Required.OPTIONAL,
                                       toCardinality(element),
@@ -87,12 +87,12 @@ public class TemplateTranslator {
         var childNodes = template.getChildSchemas().stream().map(childSchemaArtifact -> {
             return toCodeGenerationNode((SchemaArtifact) childSchemaArtifact);
         }).toList();
-        return CodeGenerationNode.get(template.getJsonLdId().map(URI::toString).orElse(""),
+        return CodeGenerationNode.get(template.jsonLdId().map(URI::toString).orElse(""),
                                       true,
                                       templateClassName,
                                       childNodes,
                                       ArtifactType.TEMPLATE,
-                                      template.getDescription(),
+                                      template.description(),
                                       null,
                                       Required.OPTIONAL,
                                       null,
@@ -102,16 +102,16 @@ public class TemplateTranslator {
 
     @Nullable
     private static String getXsdDatatype(@Nonnull FieldSchemaArtifact field) {
-        var valueConstraints = field.getValueConstraints();
+        var valueConstraints = field.valueConstraints();
         if (valueConstraints.isEmpty()) {
             return null;
         }
         var vc = valueConstraints.get();
-        if (vc.getNumberType().isPresent()) {
-            return vc.getNumberType().map(NumberType::getText).orElse(null);
+        if (vc.numberType().isPresent()) {
+            return vc.numberType().map(NumberType::getText).orElse(null);
         }
-        else if (vc.getTemporalType().isPresent()) {
-            return vc.getTemporalType().map(TemporalType::getText).orElse(null);
+        else if (vc.temporalType().isPresent()) {
+            return vc.temporalType().map(TemporalType::getText).orElse(null);
         }
         else {
             return null;
@@ -120,7 +120,7 @@ public class TemplateTranslator {
 
     private Cardinality toCardinality(ChildSchemaArtifact artifact) {
         if (artifact.isMultiple()) {
-            return new Cardinality(artifact.getMinItems().orElse(0), artifact.getMaxItems().orElse(Integer.MAX_VALUE));
+            return new Cardinality(artifact.minItems().orElse(0), artifact.maxItems().orElse(Integer.MAX_VALUE));
         }
         else {
             return Cardinality.getZeroOrOne();
@@ -130,7 +130,7 @@ public class TemplateTranslator {
 
     private Optional<String> getPropertyIri(Artifact artifact) {
         if (artifact instanceof ChildSchemaArtifact childSchemaArtifact) {
-            return childSchemaArtifact.getPropertyURI().map(URI::toString);
+            return childSchemaArtifact.propertyUri().map(URI::toString);
         }
         return Optional.empty();
     }
