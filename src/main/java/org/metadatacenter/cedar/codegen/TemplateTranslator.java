@@ -107,11 +107,11 @@ public class TemplateTranslator {
             return null;
         }
         var vc = valueConstraints.get();
-        if (vc.numberType().isPresent()) {
-            return vc.numberType().map(NumberType::getText).orElse(null);
+        if(vc.isNumericValueConstraint()) {
+            return vc.asNumericValueConstraints().numberType().getText();
         }
-        else if (vc.temporalType().isPresent()) {
-            return vc.temporalType().map(TemporalType::getText).orElse(null);
+        if (vc.isTemporalValueConstraint()) {
+            return vc.asTemporalValueConstraints().temporalType().getText();
         }
         else {
             return null;

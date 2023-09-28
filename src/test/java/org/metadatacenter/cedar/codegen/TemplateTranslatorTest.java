@@ -69,7 +69,10 @@ public class TemplateTranslatorTest {
     @Test
     public void shouldGenerateNodeWithArtifactTypeIriField() {
         var vc = mock(ValueConstraints.class);
-        when(vc.classes()).thenReturn(List.of(mock(ClassValueConstraint.class)));
+        when(vc.isControlledTermValueConstraint()).thenReturn(true);
+        var termValueConstraints = mock(ControlledTermValueConstraints.class);
+        when(vc.asControlledTermValueConstraints()).thenReturn(termValueConstraints);
+        when(termValueConstraints.classes()).thenReturn(List.of(mock(ClassValueConstraint.class)));
         when(field.valueConstraints()).thenReturn(Optional.of(vc));
         var node = translator.toCodeGenerationNode(field);
         assertThat(node.artifactType()).isEqualTo(CodeGenerationNodeRecord.ArtifactType.LITERAL_FIELD);
